@@ -2103,6 +2103,7 @@ class WebRTCInput:
             pass
 
     def _arm_x_event_watcher(self):
+        return
         """(Re)register the event-loop reader that wakes X consumers when the
         input connection's socket goes readable. Idempotent; re-arms when the fd
         changes under us (reconnect)."""

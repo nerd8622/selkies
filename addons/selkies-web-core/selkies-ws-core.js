@@ -3469,22 +3469,9 @@ function initWebsockets() {
   triggerInitializeDecoder = initializeDecoder;
   console.log("initializeDecoder function assigned to triggerInitializeDecoder.");
 
-  // Single-chain scheduler: starting the paint loop must never create a second
-  // permanent rAF chain (e.g. on reconnect), which would double every frame's
-  // canvas work from then on.
-  let paintScheduled = false;
-  function schedulePaintVideoFrame() {
-    if (paintScheduled) return;
-    paintScheduled = true;
-    requestAnimationFrame(() => {
-      paintScheduled = false;
-      paintVideoFrame();
-    });
-  }
-
   function paintVideoFrame() {
     if (!canvas || !canvasContext) {
-      schedulePaintVideoFrame();
+      requestAnimationFrame(paintVideoFrame);
       return;
     }
 
@@ -3689,7 +3676,7 @@ function initWebsockets() {
         }
       }
     }
-    schedulePaintVideoFrame();
+    requestAnimationFrame(paintVideoFrame);
   }
 
   async function initializeAudio() {
@@ -4701,7 +4688,7 @@ function initWebsockets() {
         if (playButtonElement) playButtonElement.classList.add('hidden');
         if (statusDisplayElement) statusDisplayElement.classList.remove('hidden');
 
-        schedulePaintVideoFrame();
+        requestAnimationFrame(paintVideoFrame);
 
         if (isSharedMode) {
             sharedClientState = 'ready';
